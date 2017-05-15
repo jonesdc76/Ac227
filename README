@@ -1,0 +1,86 @@
+Information on ROOT trees created by BinaryToRootTree.C
+-------------------------------------------------------
+These trees contain the entire raw traces in addition to other useful data like
+minima and average. Names are assigned to different channels via a channel map
+file called "channel_map.config". For now the naming is just Cell_xL and Cell_xR
+where x is a number and R/L are right/left. Wherever <channel> is used in the 
+text below, the name in channel_map.config for the given channel is substituted.
+
+A summary of the information for each channel is listed below. Since reading
+ROOT trees requires knowledge of the data type, that is also listed.
+
+Variable               Data         Description
+Name                   Type
+---------------------------------------------------------------------------
+abs_time               double       Time (in seconds) since board initialization at start of run.
+
+average<Channel>       double       Average value of all samples in event waveform for that channel
+
+dt                     double       Time (in seconds) elapsed since previous trigger. This is the 
+                                    difference in abs_time between current and previous events.
+
+halfMinIdx<Channel>    uint16_t     First index before waveform reaches half-minimum value for 
+                                    given channel.
+
+max<Channel>           uint16_t     Maximum value in waveform for given channel.
+
+maxIdx<Channel>        uint16_t     Index of maximum value in waveform for given channel.
+
+min<Channel>           uint16_t     Minimum value in waveform for given channel.
+
+minIdx<Channel>        uint16_t     Index of minimum value in waveform for given channel.
+
+nSamples               uint16_t     Number of samples per waveform per channel.
+
+ped1<Channel>          struct       C structure compose of val(double), rms(double), and n(uint16_t)
+                                    Calculation of pedestal based on first n samples of waveform.
+        .val           double       Mean of first n samples of waveform
+        .rms           double       RMS (standard deviation) of first n samples of waveform
+        .n             uint16_t     Number of samples in pedestal calculation.
+
+ped2<Channel>          struct       C structure compose of val(double), rms(double), and n(uint16_t)
+                                    Calculation of pedestal based on samples n to 2n-1 of waveform.
+        .val           double       Mean of n to 2n-1 samples of waveform
+        .rms           double       RMS (standard deviation) of n to 2n-1 samples of waveform
+        .n             uint16_t     Number of samples in pedestal calculation.
+
+ped3<Channel>          struct       C structure compose of val(double), rms(double), and n(uint16_t)
+                                    Calculation of pedestal based on samples 2n to 3n-1 of waveform.
+        .val           double       Mean of 2n to 3n-1 samples of waveform
+        .rms           double       RMS (standard deviation) of 2n to 3n-1 samples of waveform
+        .n             uint16_t     Number of samples in pedestal calculation.
+
+ped4<Channel>          struct       C structure compose of val(double), rms(double), and n(uint16_t)
+                                    Calculation of pedestal based on samples 3n to 4n-1 of waveform.
+        .val           double       Mean of 3n to 4n-1 samples of waveform
+        .rms           double       RMS (standard deviation) of 3n to 4n-1 samples of waveform
+        .n             uint16_t     Number of samples in pedestal calculation.
+
+***************************************
+BuildRnPoTree.C
+***************************************
+Builds tree of RnPo candidates where each entry is a single new prompt alpha
+candidate with any number of associated delayed and far candidates. This is 
+useful for finding the delayed alpha spectrum. To find the prompt alpha spectrum
+one would have to start by identifying delayed and then find all time-correlated
+prompt alphas. This reverse process is done by "BuildRnPoDelTree.C". 
+Identifies time correlated candidates from the  Rn219->Po215->Pb211 alpha-alpha 
+decay chain. Po215 has a half life of 1.8 ms so look for alpha followed shortly 
+after by another alpha. This code searches for prompt alpha candidates and then 
+when it finds one searches forward for a second time-correlated alpha. 
+This code was built to run on my desktop at Temple.
+
+***************************************
+BuildRnPoDelTree.C
+***************************************
+Builds tree of RnPo candidates where each entry is a single new delayed alpha 
+candidate with any number of associated prompt and far candidates. This is 
+useful for finding the prompt alpha spectrum. To find the delayed alpha spectrum
+one would have to start by identifying prompt and then find all time-correlated
+delayed alphas. This reverse process is done by "BuildRnPoTree.C". 
+Identifies time correlated candidates from the  Rn219->Po215->Pb211 alpha-alpha 
+decay chain. Po215 has a half life of 1.8 ms so look for alpha followed shortly 
+after by another alpha. This code searches for delayed alpha candidates and then
+when it finds one searches backward for a second time-correlated alpha. 
+This code was built to run on my desktop at Temple.
+
